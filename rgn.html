@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<HTML>
+
+<!--
+Rede Geodésica Nacional
+
+0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+-->
+
+
+<HEAD>	
+<TITLE>Linguagens e Ambientes de Programação (2020/2021) [Eng.Inf. - DI/FCT/UNL] - 3º projeto prático (Javascript)</TITLE>
+<META charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">	
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://leaflet.github.io/Leaflet.markercluster/dist/MarkerCluster.Default.css" />
+<script src="https://leaflet.github.io/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
+
+<SCRIPT TYPE="text/javascript" SRC="rgn.js"></SCRIPT>
+<STYLE>
+html, body { font-size:12px; height: 100%;  width: 100%; padding: 0; margin: 0;}
+input { padding: 0; margin: 0;}
+.button {
+  border: none;
+  color: white;
+  padding: 6px 28px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+.button {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #4CAF50;
+}
+.button:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.buttonP {
+  border: none;
+  color: white;
+  padding: 2px 14px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+.buttonP {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #4CAF50;
+}
+.buttonP:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+.txtlink {
+color: green;
+text-decoration:none;
+margin-left:20px;
+font-size:16px;
+}
+.txtlink:hover {
+text-decoration:underline;
+}
+
+</STYLE>
+</HEAD> 
+
+<BODY ONLOAD="onLoad()">
+
+<DIV STYLE="position: fixed; top: 0px; left: 0px; height: 100%; width: 250px; background: rgba(255, 255, 255, 0.158); font-family:sans-serif">
+<H1 align="center" >Rede Geodésica Nacional</H1>
+
+<hr style="height:2px;border-width:0px;background-color:rgb(0, 0, 0)"><p>
+<b style="font-size: 17px;">&nbsp;Autores:</b> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp; 57418 Bruno Carmo <br />
+&nbsp;&nbsp;&nbsp;&nbsp; 57449 Sahil Kumar <br />
+
+<hr style="height:2px;border-width:0px;background-color:rgb(0, 0, 0)"><p>
+<b style="font-size: 17px;">&nbsp;Controlo:</b>
+<br >&nbsp;&nbsp;&nbsp;&nbsp;VGs 1º Ordem:
+	<img src="resources/order1.png" alt="order1" />
+	<input type="checkbox" id="1" checked onchange="checkboxUpdate(this)"/>&nbsp;
+<br >&nbsp;&nbsp;&nbsp;&nbsp;VGs 2º Ordem:
+	<img src="resources/order2.png" alt="order2" />	
+	<input type="checkbox" id="2" checked onchange="checkboxUpdate(this)"/>&nbsp;
+<br >&nbsp;&nbsp;&nbsp;&nbsp;VGs 3º Ordem:
+	<img src="resources/order3.png" alt="order3" />	
+	<input type="checkbox" id="3" checked onchange="checkboxUpdate(this)"/>&nbsp;
+<br >&nbsp;&nbsp;&nbsp;&nbsp;VGs 4º Ordem:
+	<img src="resources/order4.png" alt="order4" />	
+	<input type="checkbox" id="4" checked onchange="checkboxUpdate(this)"/>
+<br />
+
+<hr style="height:2px;border-width:0px;background-color:rgb(0, 0, 0)"><p>
+<b style="font-size: 17px;">&nbsp;Estatísticas:</b>
+<br >&nbsp;&nbsp;VGs visíveis: <SPAN id='visible_caches'>0</SPAN>
+<br >&nbsp;&nbsp;1º Ordem: <SPAN id='visible_o1_caches'>0</SPAN>
+<br >&nbsp;&nbsp;2º Ordem: <SPAN id='visible_02_caches'>0</SPAN>
+<br >&nbsp;&nbsp;3º Ordem: <SPAN id='visible_03_caches'>0</SPAN>
+<br >&nbsp;&nbsp;4º Ordem: <SPAN id='visible_04_caches'>0</SPAN>
+<br >&nbsp;&nbsp;VG mais elevado: <SPAN id='highest_vg_name'>0</SPAN>
+<br >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Altitude: <SPAN id='highest_vg_altitude'>0</SPAN>
+<br >&nbsp;&nbsp;VG menos elevado: <SPAN id='lowest_vg_name'>0</SPAN>
+<br >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Altitude: <SPAN id='lowest_vg_altitude'>0</SPAN>
+
+<hr style="height:2px;border-width:0px;background-color:rgb(0, 0, 0)"><p>
+
+<b style="font-size: 17px;">&nbsp;Testes:</b><br>&nbsp;
+
+<INPUT TYPE="button" class="button" ID="button1" VALUE="Validar VGs" ONCLICK="checkAllVG()"><br>&nbsp;
+<INPUT TYPE="button" class="button" ID="button2" VALUE="   Altitudes  " ONCLICK="viewVGHeight()">
+
+
+
+<div id="b" style="position: absolute; bottom: 35px">
+	&nbsp; <a href="https://www.dgterritorio.gov.pt" title="Direção Geral Do Território" class = "txtlink">Direção Geral Do Território</a>&nbsp;&nbsp;
+</div>
+<div style="position: absolute; bottom: 10px">
+	&nbsp; <a href="https://www.fct.unl.pt" title="FCT UNL" class = "txtlink">FCT UNL</a>&nbsp;&nbsp;
+</div>
+
+
+</DIV>
+
+
+<div id="mapid" style="position: fixed; top: 0px; left: 250px; width: 100%; height: 100%;"></div>
+</BODY>
+
+</HTML>
